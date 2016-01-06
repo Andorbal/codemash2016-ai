@@ -7,8 +7,13 @@ namespace Games
 {
     public class Maze : IState
     {
-        readonly string[] moves = new[] { "Left", "Right", "Up", "Down" };
-        readonly Func<Tuple<int, int>>[] moveActions;
+        readonly static string[] moves = new[] { "Left", "Right", "Up", "Down" };
+        readonly static Func<Tuple<int, int>, Tuple<int, int>>[] moveActions = new Func<Tuple<int, int>, Tuple<int, int>>[] {
+            x => ChangePosition(x, -1, 0),
+            x => ChangePosition(x, 1, 0),
+            x => ChangePosition(x, 0, -1),
+            x => ChangePosition(x, 0, 1)
+       };
 
         readonly char[,] data;
         readonly Tuple<int, int> position;
@@ -21,13 +26,6 @@ namespace Games
             this.end = end;
 
             IsTerminal = AreEqual(position, end);
-
-            moveActions = new Func<Tuple<int, int>>[] {
-               () => GetHorizontal(-1),
-               () => GetHorizontal(1),
-               () => GetVertical(-1),
-               () => GetVertical(1)
-           };
         }
 
         public string Id { get; set; }
@@ -42,7 +40,7 @@ namespace Games
         {
             for (int i = 0; i < 4; i++)
             {
-                var newPosition = moveActions[i]();
+                var newPosition = moveActions[i](position);
                 if (CharacterAt(newPosition) == ' ') {
                     yield return new MazeMove(new Maze(data, newPosition, end), moves[i]);
                 }
@@ -60,29 +58,28 @@ namespace Games
             {
                 for (int j = 0; j < data.GetLength(0); j++)
                 {
-                    var location = Tuple.Create(j, i);
-
-                    if (AreEqual(location, position)) {
-                        buffer.Append('O');
-                    }
-                    else if (AreEqual(location, end)) {
-                        buffer.Append('X');
-                    }
-                    else {
-                        buffer.Append(CharacterAt(location));
-                    }
+                    buffer.Append(PrintCharacterAt(Tuple.Create(j, i)));
                 }
+
                 buffer.Append(Environment.NewLine);
             }
 
             return buffer.ToString();
         }
 
-        private Tuple<int, int> GetHorizontal(int change) =>
-            Tuple.Create(position.Item1 + change, position.Item2);
+        private char PrintCharacterAt(Tuple<int, int> location) {
+            if (AreEqual(location, position)) {
+                return 'O';
+            }
+            else if (AreEqual(location, end)) {
+                return 'X';
+            }
 
-        private Tuple<int, int> GetVertical(int change) =>
-            Tuple.Create(position.Item1, position.Item2 + change);
+            return CharacterAt(location);
+        }
+
+        private static Tuple<int, int> ChangePosition(Tuple<int, int> location, int xChange, int yChange) =>
+            Tuple.Create(location.Item1 + xChange, location.Item2 + yChange);
 
         private char CharacterAt(Tuple<int, int> location) =>
             data[location.Item1, location.Item2];
