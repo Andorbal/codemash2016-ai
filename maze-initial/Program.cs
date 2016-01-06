@@ -9,16 +9,32 @@ namespace Games
         public static void Main(string[] args)
         {
             Console.WriteLine("Maze Solver!");
+            Console.WriteLine("1) for small maze");
+            Console.WriteLine("2) for large maze");
 
-            Maze maze = new Maze(GetMazeData(mazeDefinition), Tuple.Create(1, 1), Tuple.Create(13, 4));
-            Maze maze2 = new Maze(GetMazeData(mazeDefinition2), Tuple.Create(1, 1), Tuple.Create(35, 21));
+            Maze maze;
+
+            var key = Console.ReadKey();
+            if (key.KeyChar == '1') {
+                maze = new Maze(GetMazeData(mazeDefinition), Tuple.Create(1, 1), Tuple.Create(13, 4));
+            }
+            else if (key.KeyChar == '2') {
+                maze = new Maze(GetMazeData(mazeDefinition2), Tuple.Create(1, 1), Tuple.Create(35, 21));
+            }
+            else
+            {
+                Console.WriteLine();
+                Console.WriteLine("Fine, I didn't want to solve a maze, anyway...");
+                return;
+            }
+
             AStarSearch strategy = new AStarSearch();
             strategy.Heuristic = s => s.Heuristic();
             var search = new SimpleSearch(strategy);
-            search.Find(maze2);
+            search.Find(maze);
 
             Console.WriteLine("Initial");
-            Console.WriteLine(maze2);
+            Console.WriteLine(maze);
 
             int moves = 0;
             foreach(var s in search.Solution)
