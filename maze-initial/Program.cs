@@ -10,14 +10,15 @@ namespace Games
         {
             Console.WriteLine("Maze Solver!");
 
-            Maze maze = new Maze(GetMazeData(), Tuple.Create(1, 1), Tuple.Create(13, 4));
+            Maze maze = new Maze(GetMazeData(mazeDefinition), Tuple.Create(1, 1), Tuple.Create(13, 4));
+            Maze maze2 = new Maze(GetMazeData(mazeDefinition2), Tuple.Create(1, 1), Tuple.Create(35, 21));
             AStarSearch strategy = new AStarSearch();
             strategy.Heuristic = s => s.Heuristic();
             var search = new SimpleSearch(strategy);
-            search.Find(maze);
+            search.Find(maze2);
 
             Console.WriteLine("Initial");
-            Console.WriteLine(maze);
+            Console.WriteLine(maze2);
 
             int moves = 0;
             foreach(var s in search.Solution)
@@ -29,8 +30,8 @@ namespace Games
             Console.WriteLine($"Solved in {moves} moves");
         }
 
-        private static char[,] GetMazeData() {
-            char[][] mazeData = mazeDefinition
+        private static char[,] GetMazeData(string def) {
+            char[][] mazeData = def
                 .Split(new[] { '\n' })
                 .Skip(1)
                 .Select(x => x.ToArray())
@@ -53,5 +54,30 @@ namespace Games
 +   +   + +++ +
 + +++++     + +
 +++++++++++++++";
+
+        private const string mazeDefinition2 = @"
++++++++++++++++++++++++++++++++++++++
++ +     +     +     +       +   +   +
++ + +++ + +++ +++++ +++ +++ +++ +   +
++     +   + +     +     + + +   +   +
++++++ + +++++ +++++ +++ + + + +++++ +
++   + +     +     + + + + +     +   +
++ + + +++++ + + +++++ +++ + +++++ + +
++ +     + + +   +     +     +   +   +
++ +++++ +++ +++ + +++ +++++ + +++   +
++     +   + +   + +   +     + +     +
++ +++ +++ + +++ + +++++ + + + +++++++
++   +   + + +   +   +   + + +   +   +
++++++++ + + + +++++ + +++ + +++ +++ +
++     + +     +   + +   + +   +     +
++ +++ + +++++ +++ + +++ +++ +++++++ +
++ +   +     +     +   + +       +   +
++ + +++++ + +++ +++++ + + +++++ +   +
++ +     + + +   +           +   +   +
++ +++++ + + + +++ +++++ +++ + +++++++
++ +   + + +     +     + +   +       +
++ + +++ +++ +++ +++++ +++ + +++++ + +
++ +       +           +     +       +
++++++++++++++++++++++++++++++++++++++";
     }
 }
