@@ -16,9 +16,6 @@ namespace Games
 
         public IState State { get; set; }
 
-        public Maze GetState()
-        {
-            return State as Maze;
-        }
+        public Maze GetState() => State as Maze;
     }
 }

@@ -10,17 +10,17 @@ namespace Games
         readonly string[] moves = new[] { "Left", "Right", "Up", "Down" };
         readonly Func<Tuple<int, int>>[] moveActions;
 
-        readonly char[][] data;
+        readonly char[,] data;
         readonly Tuple<int, int> position;
         readonly Tuple<int, int> end;
 
-        public Maze(char[][] data, Tuple<int, int> position, Tuple<int, int> end)
+        public Maze(char[,] data, Tuple<int, int> position, Tuple<int, int> end)
         {
             this.data = data;
             this.position = position;
             this.end = end;
 
-            IsTerminal = position == end;
+            IsTerminal = AreEqual(position, end);
 
             moveActions = new Func<Tuple<int, int>>[] {
                () => GetHorizontal(-1),
@@ -50,17 +50,27 @@ namespace Games
         }
 
         public bool IsEqualTo(IState maze) =>
-            position == ((Maze) maze).position;
+            AreEqual(position, ((Maze) maze).position);
 
         public override string ToString()
         {
             var buffer = new StringBuilder();
 
-            for (int i = 0; i < data.Length; i++)
+            for (int i = 0; i < data.GetLength(1); i++)
             {
-                for (int j = 0; j < data[i].Length; j++)
+                for (int j = 0; j < data.GetLength(0); j++)
                 {
-                    buffer.Append(data[i][j]);
+                    var location = Tuple.Create(j, i);
+
+                    if (AreEqual(location, position)) {
+                        buffer.Append('O');
+                    }
+                    else if (AreEqual(location, end)) {
+                        buffer.Append('X');
+                    }
+                    else {
+                        buffer.Append(CharacterAt(location));
+                    }
                 }
                 buffer.Append(Environment.NewLine);
             }
@@ -75,6 +85,9 @@ namespace Games
             Tuple.Create(position.Item1, position.Item2 + change);
 
         private char CharacterAt(Tuple<int, int> location) =>
-            data[location.Item1][location.Item2];
+            data[location.Item1, location.Item2];
+
+        private bool AreEqual(Tuple<int, int> x, Tuple<int, int> y) =>
+            x.Item1 == y.Item1 && x.Item2 == y.Item2;
     }
 }
